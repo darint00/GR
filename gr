@@ -5,7 +5,7 @@
 PROG_LIST=""
 SUBPROG=""
 GRDIR=`dirname $(readlink -f $0)`
-${KEYSDIR:=/home/KEYS}
+KEYSDIR=/home/KEYS
 SCRIPTSDIR=scripts
 
 if [ "$1" = "--scriptsdir" ];then
