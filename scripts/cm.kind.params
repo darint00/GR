@@ -1,0 +1,236 @@
+#!/bin/bash
+
+
+if [[ $# == 0 ]]
+then
+   echo " "
+   echo "`basename $0:` :  Kind Cluster Management "
+   echo "       --helm      - Setup kind cluster for helm Install"
+   echo "       --sofy      - Setup kind cluseter for Sofy Install"
+   echo "       --act       - Setup kind cluseter for ActianX/Vectorh Install"
+   echo "       --kind1     - Use Non-default cluster [kind1]"
+   echo "       --del       - Delete Cluster"
+   echo " "
+   echo "       Additional Options:"
+   echo "          --nfs       - Install nfs-server-provisioner (sofy optional)"
+   echo "          --emissary  - Install Emissary CRDs (sory 2.0.1.2+ required)"
+   echo "          --metrics   - Install metrics-server (required for hpa)"
+   echo "          --minio     - Install MinIO (s3 buckets) "
+   echo "          --act_sec   - Install ActianX/VectorH credentials"
+   echo " "
+   echo " "
+   echo " "
+   exit
+fi
+
+
+metallb_flag=1
+while [[ $# -ge 1 ]];
+do
+  case "$1" in
+    --metrics)
+      shift
+      metrics_flag=1
+      ;;
+    --kind1)
+      shift
+      kind1_flag=1
+      ;;
+    --del)
+      shift
+      del_flag=1
+      metallb_flag=""
+      ;;
+    --emissary)
+      shift
+      emissary_flag=1
+      ;;
+    --sofy)
+      shift
+      sofy_flag=1
+      ;;
+    --act)
+      shift
+      nfs_act_flag=1
+      minio_flag=1
+      act_sec_flag=1
+      ;;
+    --nfs)
+      shift
+      nfs_flag=1
+      ;;
+    --minio)
+      shift
+      minio_flag=1
+      ;;
+    --act_sec)
+      shift
+      act_sec_flag=1
+      ;;
+    *)
+      break
+      ;;
+  esac
+done
+
+
+
+
+
+#
+###############################
+## CREATE/Delete Kind CLUSTER
+#################################
+if [[ $del_flag == "" ]]; then
+
+  echo "Creating Cluster"
+  if [[ $kind1_flag == "1" ]]; then
+    kind create cluster --kubeconfig=${HOME}/.kube/config.kind --name kind1 --config=${GRDIR}/config/kind1-config.yaml
+  else
+    kind create cluster --kubeconfig=${HOME}/.kube/config.kind --config=${GRDIR}/config/kind-config.yaml
+  fi
+
+  x=0
+  while [ $x == 0 ]
+  do
+    kubectl get nodes |grep -i notready > /dev/null
+    x=$?
+  done  
+
+else
+
+  echo "Deleting Cluster"
+  if [[ $kind1_flag == "1" ]]; then
+      echo "Delete Cluster name=kind1? [y/n]"
+      read  yn
+      if [[ $yn == "y" ]]; then
+        kind delete cluster --name kind1
+      fi
+  else
+      echo "Delete Cluster name=kind? [y/n]"
+      read  yn
+      if [[ $yn == "y" ]]; then
+        kind delete cluster --name kind
+      fi
+  fi
+
+fi
+
+
+
+
+#################################
+## INSTALL cert-manager 
+#################################
+if [[ $sofy_flag == "1" ]]; then
+  k8s --i cert-manager
+  sleep 2
+fi
+
+#################################
+## CREATE NAMESPACE
+#################################
+if [[ $del_flag == "" ]]; then
+  if [[ $sofy_flag == "1" ]]; then
+    kubectl create namespace sofy-testing
+    k8s --cm set --ns sofy-testing
+  else
+    kubectl create namespace helm-testing
+    k8s --cm set --ns helm-testing
+  fi
+  sleep 2
+fi
+
+#################################
+## MAKE PULL SECRET 
+#################################
+if [[ $sofy_flag == "1" ]]; then
+  ${KEYSDIR}/hclcr.io.credentials
+  sleep 2
+fi
+
+#################################
+## INSTALL NFS-vec
+#################################
+if [[ $nfs_act_flag == "1" ]]; then
+  echo "Installing NFS-vec"
+  k8s --i nfs-vec
+  x=0
+  while [ $x == 0 ]
+  do
+  kubectl get pods |grep "0/1" > /dev/null
+  x=$?
+  done  
+fi
+#################################
+## INSTALL NFS 
+#################################
+if [[ $nfs_flag == "1" ]]; then
+  echo "Installing NFS"
+  k8s --i nfs
+  x=0
+  while [ $x == 0 ]
+  do
+  kubectl get pods |grep "0/1" > /dev/null
+  x=$?
+  done  
+fi
+
+#################################
+## INSTALL METALLB 
+#################################
+if [[ $metallb_flag == "1" ]]; then
+  echo "Installing Metallb"
+  k8s --i metallb
+fi
+
+
+#################################
+## INSTALL minio 
+#################################
+if [[ $minio_flag == "1" ]]; then
+  echo "Installing NFS"
+  k8s --i minio 
+  x=0
+  while [ $x == 0 ]
+  do
+  kubectl get pods |grep "0/1" > /dev/null
+  x=$?
+  done  
+fi
+
+#################################
+## INSTALL act_sec
+#################################
+if [[ $act_sec_flag == "1" ]]; then
+  k8s --i act-creds
+  x=0
+  while [ $x == 0 ]
+  do
+  kubectl get pods |grep "0/1" > /dev/null
+  x=$?
+  done  
+fi
+
+
+
+
+#################################
+## INSTALL CRDS for emissary 
+#################################
+if [[ $emissary_flag == "1" ]]; then
+  echo "Installing Emissary"
+  k8s --i emissary
+fi
+
+
+#################################
+## INSTALL Metrics server 
+#################################
+if [[ $metrics_flag == "1" ]]; then
+  echo "Installing metrics"
+  k8s --i metrics
+fi
+
+
+

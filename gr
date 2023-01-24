@@ -1,0 +1,172 @@
+#!/bin/bash
+
+### Set this param to Confidential KEYS used
+
+PROG_LIST=""
+SUBPROG=""
+GRDIR=`dirname $(readlink -f $0)`
+${KEYSDIR:=/home/KEYS}
+SCRIPTSDIR=scripts
+
+if [ "$1" = "--scriptsdir" ];then
+   shift
+   SCRIPTSDIR=$1
+   shift
+fi
+if [ "$1" = "--vi" ];then
+   shift
+   VI=true
+fi
+
+echo "GR Home: $GRDIR"
+echo "KEYSDIR: $KEYSDIR"
+echo "SCRIPTSDIR: $SCRIPTSDIR"
+
+function get_progs() {
+   #PROG_LIST=`ls ${GRDIR}/${SCRIPTSDIR}/*.desc |rev |cut -d/ -f1|rev`
+   PROG_LIST=`ls ${GRDIR}/${SCRIPTSDIR}/_desc.* |rev |cut -d/ -f1|rev`
+}
+
+function get_genfiles() {
+GEN_LIST=`ls ${GRDIR}/${SCRIPTSDIR}/$SUBPROG.*|cut -d. -f2-|grep -v desc`
+}
+
+function print_genfiles() {
+   MENU_ITEMS_PERLINE=3
+   ITEM_LENGTH=15
+   get_genfiles
+   printf "%8s: [-h] \n" "$SUBPROG" 
+
+   nl=0
+   newline="N"
+   for i in $GEN_LIST;
+   do
+      isparams=`echo $i|cut -d. -f2`
+      if [[ $isparams == "params" ]]; then
+         i=`echo $i|cut -d. -f1`"*"
+      fi
+      isparams=""
+
+      if [[ $newline == "Y" ]]; then
+         printf "\n"
+         printf "\t  "  
+      else
+         printf "\t  "  
+      fi
+         printf "%-${ITEM_LENGTH}s " "$i" 
+      newline="N"
+
+      nl=$((nl+1))
+      if [[ $nl == $MENU_ITEMS_PERLINE ]]; then
+         newline="Y"
+         nl=0
+      fi
+   done
+   printf "\n\n"
+}
+
+
+function LOG() {
+   echo "### $1"
+} 
+
+
+function print_usage() {
+   MENU_ITEMS_PERLINE=2
+   ITEM_LENGTH=25
+   get_progs
+   echo " "
+   echo "`basename $0:`  - General Runner" 
+   echo "       [--scriptsdir <dir>]" 
+   echo "       [--vi]" 
+
+
+   for i in $PROG_LIST;
+   do
+      if [[ $newline == "Y" ]]; then
+         printf "\n"
+         printf "\t  "  
+      else
+         printf "\t  "  
+      fi
+         line=`cat ${GRDIR}/${SCRIPTSDIR}/$i`
+         printf "%-${ITEM_LENGTH}s " "$line" 
+      newline="N"
+
+      nl=$((nl+1))
+      if [[ $nl == $MENU_ITEMS_PERLINE ]]; then
+         newline="Y"
+         nl=0
+      fi
+   done
+   printf "\n\n"
+
+
+}
+
+
+
+##############################################
+# MAIN CODE
+##############################################
+arg1=$1
+get_progs
+found=0
+for i in $PROG_LIST;
+do
+   opt=`cat ${GRDIR}/${SCRIPTSDIR}/$i|awk '{print $1}'`
+   if [[ $opt == $arg1 ]]
+   then
+      SUBPROG=`echo $i |cut -d. -f2`
+      found=1
+      break
+   fi
+done
+
+SUBPROG=`echo $i |cut -d. -f2`
+#echo found: $found
+echo "SUBPROG: $SUBPROG"
+
+
+
+if [[ $# == 0 || $found == 0 ]]
+then
+   print_usage
+   exit
+fi
+
+
+shift
+prod=$1
+if [[ $prod == "" ]]; then
+   print_usage
+   print_genfiles
+   exit
+fi
+
+shift
+if [[ -f ${GRDIR}/${SCRIPTSDIR}/$SUBPROG.$prod.params ]]; then
+   pvalue=".params"
+else
+   pvalue=""
+fi
+
+echo "RUNNING: $opt[${SUBPROG}.${prod}${pvalue}] : PARAMS [$@]" 
+
+
+GRDIR=$GRDIR
+SCRIPTSDIR=$SCRIPTSDIR
+SUBPROG=$SUBPROG
+PROD=$prod
+PVALUE=$pvalue
+if [ "$VI" = true ];
+then
+vi -R ${GRDIR}/${SCRIPTSDIR}/${SUBPROG}.${prod}${pvalue} 
+else
+. ${GRDIR}/${SCRIPTSDIR}/${SUBPROG}.${prod}${pvalue} "$@"
+fi
+
+
+
+
+

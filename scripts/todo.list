@@ -1,0 +1,39 @@
+#!/bin/bash
+
+echo "###########################################"
+echo "### Todo list "
+echo "###########################################"
+
+if [ "$1" = "-h" ]; then
+exit
+fi
+
+FILE=/home/bin/GR/config/todolist
+TMPFILE=/home/bin/GR/config/tmp.todolist
+cat $FILE |sort -n -k 2 > $TMPFILE
+readarray -t rows < $TMPFILE
+rm $TMPFILE
+
+printf "\n"
+  printf "\t%-15s" DATE
+  printf "%-10s" PRI 
+  printf "%s" TODO
+  printf "\n"
+rownum=1
+for row in "${rows[@]}"; do
+  row_array=(${row})
+  cnt=${#row_array[@]}
+  printf "%5s" "#$rownum"
+  printf "\t%-15s" ${row_array[0]}
+  printf "%-10s" ${row_array[1]}
+  for (( i=2; i<cnt; i++))
+  do
+    printf "%s " ${row_array[$i]}
+  done
+  printf "\n"
+#echo ${row_array[1]} ${row_array[2]} ${row_array[3]}
+  rownum=$((rownum+1))
+done
+printf "\n"
+
+

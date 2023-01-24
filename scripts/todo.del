@@ -1,0 +1,56 @@
+#!/bin/bash
+
+echo "###########################################"
+echo "### Todo list" 
+echo "###########################################"
+
+FILE=/home/bin/GR/config/todolist
+TMPFILE=/home/bin/GR/config/tmp.todolist
+if [ "$1" = "-h" ]; then
+exit
+fi
+
+
+function print_usage() {
+   echo " "
+   echo "`basename $0:` :  Add Todo Item"
+   echo "       --d     - delete #" 
+   echo " "
+   exit
+}
+
+print_usage=1
+while [[ $# -ge 1 ]];
+do
+  case "$1" in
+    --d)
+      print_usage=0
+      shift
+      delrownum=$1
+      #delrownum=$((delrownum-1))
+      shift
+      ;;
+    *)
+      break
+      ;;
+  esac
+done
+
+if [[ ${print_usage} -eq 1 ]];then
+  print_usage
+fi
+
+
+cat $FILE |sort -n -k 2 > $TMPFILE 
+readarray -t rows < $TMPFILE
+rm $TMPFILE
+
+rownum=1
+for row in "${rows[@]}"; do
+    #echo "Rownum: $rownum $row"
+    if [[ "$delrownum" == "$rownum" ]]; then
+        echo "     Delete: ${row}" 
+        sed -i "/${row}/d" $FILE
+    fi
+   rownum=$((rownum+1))
+done
