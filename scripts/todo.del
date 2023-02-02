@@ -11,32 +11,18 @@ exit
 fi
 
 
+
 function print_usage() {
    echo " "
-   echo "`basename $0:` :  Add Todo Item"
-   echo "       --d     - delete #" 
+   echo "`basename $0:` :  <delete #>" 
    echo " "
    exit
 }
 
-print_usage=1
-while [[ $# -ge 1 ]];
-do
-  case "$1" in
-    --d)
-      print_usage=0
-      shift
-      delrownum=$1
-      #delrownum=$((delrownum-1))
-      shift
-      ;;
-    *)
-      break
-      ;;
-  esac
-done
 
-if [[ ${print_usage} -eq 1 ]];then
+delrownum=$1
+
+if [[ $# != 1 ]];then
   print_usage
 fi
 

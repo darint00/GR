@@ -1,1 +1,1 @@
---cmd <Run command>
+--r <Run command>
