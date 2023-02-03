@@ -45,8 +45,6 @@ fi
 
 
 
-  exec > >(tee -i terraform.out)
-
 
 if [[ "$action" == "hcl" ]]; then
   git config user.name darin-tracy
