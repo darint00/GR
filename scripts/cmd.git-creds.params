@@ -1,0 +1,69 @@
+#!/bin/bash
+
+
+
+function print_usage()
+{
+   echo "Usage: $0  - terraform (new)"
+   echo "          --hcl"
+   echo "          --actian"
+   echo "          --gmail"
+   echo " "
+   exit
+}
+
+
+print_usage=1
+while [[ $# -ge 1 ]];
+do
+  case "$1" in
+    --hcl)
+      shift
+      print_usage=0
+      action="hcl"
+      ;;
+    --actian)
+      shift
+      print_usage=0
+      action="actian"
+      ;;
+    --gmail)
+      shift
+      print_usage=0
+      action="gmail"
+      ;;
+    *)
+      break
+      ;;
+  esac
+done
+
+
+if [[ ${print_usage} -eq 1 ]];then
+  print_usage
+fi
+
+
+
+  exec > >(tee -i terraform.out)
+
+
+if [[ "$action" == "hcl" ]]; then
+  git config user.name darin-tracy
+  git config user.email darin.tracy@hcl.com
+fi
+
+if [[ "$action" == "actian" ]]; then
+  git config user.name dtracy 
+  git config user.email Darin.tracy@hcl.com
+fi
+
+if [[ "$action" == "gmail" ]]; then
+  git config user.name darint00 
+  git config user.email darint00@gmail.com 
+fi
+
+
+
+
+
