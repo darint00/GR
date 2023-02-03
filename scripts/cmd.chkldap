@@ -1,0 +1,3 @@
+ldapwhoami -x -w "6ix4D8Q4ldap" -D uid=informix,ou=users,dc=onedbldap,dc=com -H ldap://njdc-ldev07.prod.hclpnp.com
+
+ldapwhoami -x -w "6ix4D8Q4ldap" -D uid=informix,ou=users,dc=onedbldap,dc=com -H ldap://njdc-ldev07.prod.hclpnp.com -ZZ

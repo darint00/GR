@@ -1,0 +1,30 @@
+#!/bin/bash
+
+echo "###########################################"
+echo "### chkip" 
+echo "###########################################"
+if [ "$1" = "-h" ]; then
+exit
+fi
+
+
+BASE=192.168.86
+
+if [[ $# == 2 ]]
+then
+START=$1
+END=$2
+elif [[ "$1" == "all" ]]; then
+  START=2
+  END=239
+else
+   echo "`basename $0:` :  all | <start> <end>"
+   exit
+fi
+
+for i in $(eval echo "{$START..$END}")
+do
+
+timeout .5 ping 192.168.86.$i -c 1|grep -v PING|grep bytes
+
+done

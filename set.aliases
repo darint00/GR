@@ -1,2 +1,9 @@
-alias todo="gr --t "
+alias todo="run --t "
 
+alias clu6="run --r clu6"
+alias xbox2="run --r xbox2"
+alias xbox1="run --r xbox1"
+alias dc1="run --r dc1"
+
+
+alias tbdv="run --r tbdv"

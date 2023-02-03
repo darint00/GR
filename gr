@@ -147,6 +147,8 @@ fi
 shift
 if [[ -f ${GRDIR}/${SCRIPTSDIR}/$SUBPROG.$prod.params ]]; then
    pvalue=".params"
+elif [[ -f ${GRDIR}/${SCRIPTSDIR}/$SUBPROG.$prod.bin ]]; then
+   pvalue=".bin"
 else
    pvalue=""
 fi
@@ -163,7 +165,11 @@ if [ "$VI" = true ];
 then
 vi -R ${GRDIR}/${SCRIPTSDIR}/${SUBPROG}.${prod}${pvalue} 
 else
-. ${GRDIR}/${SCRIPTSDIR}/${SUBPROG}.${prod}${pvalue} "$@"
+   if [[ -f ${GRDIR}/${SCRIPTSDIR}/$SUBPROG.$prod.bin ]]; then
+     ${GRDIR}/${SCRIPTSDIR}/${SUBPROG}.${prod}${pvalue} "$@"
+   else
+     . ${GRDIR}/${SCRIPTSDIR}/${SUBPROG}.${prod}${pvalue} "$@"
+   fi
 fi
 
 

@@ -1,0 +1,82 @@
+#!/bin/bash
+
+clear
+while true
+do
+
+ctx=`kubectl config current-context`
+nsp=`kubectl config view --minify|grep -i namespace|awk '{print $2}'`
+#currctx=`kubectl config current-context 2>/dev/null`
+
+
+
+svc=`kubectl get svc 2>/dev/null`
+strsvc=`echo -E $svc`
+IFS=' ' read -r -a sa <<< "$strsvc"
+
+hl=`helm ls`
+strhl=`echo -E $hl`
+IFS=' ' read -r -a ha <<< "$strhl"
+
+clear
+echo "Current Context: ${ctx}   Current Namespace: ${nsp}"
+
+## PRINT PODS HEADER 
+printf "************ PODS ************ \n" 
+
+
+## PRINT PODS LINE 
+kubectl get pods
+
+
+printf "\n"
+## PRINT SVC HEADER 
+printf "********** SERVICES ********** \n" 
+printf " SVC: %-50.50s %-20.20s %-15.15s %-15.15s %-15.15s %-10.10s \n" \
+${sa[0]} ${sa[1]} ${sa[2]} ${sa[3]} ${sa[4]} ${sa[5]} 
+
+
+## PRINT SVC LINE 
+x=6
+while true
+do
+if [[ ${sa[$x]} == "" ]]
+then
+   break
+fi
+printf "      %-50.50s %-20.20s %-15.15s %-15.15s %-15.15s %-10.10s \n" \
+${sa[x]} ${sa[x+1]} ${sa[x+2]} ${sa[x+3]} ${sa[x+4]} ${sa[x+5]} 
+x=$((x+6))
+done
+
+
+
+printf "\n"
+## PRINT HELM HEADER 
+printf "******** HELM RELEASES ******* \n" 
+printf "HELM: %-20.20s %-15.15s %-10.10s %-40.40s %-10.10s %-15.15s %-10.10s\n" \
+${ha[0]} ${ha[1]} ${ha[2]} "UPDATED STATUS" ${ha[5]} ${ha[6]} ${ha[7]}
+
+## PRINT HELM LINE 
+x=8
+while true
+do
+if [[ ${ha[$x]} == "" ]]
+then
+   break
+fi
+
+longstr=`printf '%s_%s_%s_%s' ${ha[x+3]} ${ha[x+4]} ${ha[x+5]} ${ha[x+6]}` 
+
+printf "      %-20.20s %-15.15s %-10.10s %-40.40s %-10.10s %-15.15s %-10.10s\n" \
+${ha[x]} ${ha[x+1]} ${ha[x+2]}  ${longstr}  ${ha[x+7]} ${ha[x+8]} ${ha[x+9]}
+x=$((x+10))
+done
+
+
+
+sleep 3
+done
+
+
+
