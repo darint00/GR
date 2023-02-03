@@ -55,7 +55,7 @@ fi
 
 if [[ "$action" == "actian" ]]; then
   git config user.name dtracy 
-  git config user.email Darin.tracy@hcl.com
+  git config user.email Darin.tracy@actian.com
 fi
 
 if [[ "$action" == "gmail" ]]; then
