@@ -1,0 +1,30 @@
+#!/bin/bash
+
+echo "###########################################"
+echo "### thinkpad53" 
+echo "###########################################"
+if [ "$1" = "-h" ]; then
+exit
+fi
+
+
+HOME_IP=192.168.86.230
+REMOTE_IP=136.37.128.185
+
+echo "Trying Local: $HOME_IP"
+timeout .5 ping $HOME_IP -c 1 > /dev/null 2>&1 
+rc=$?
+if [[ "$rc" == "0" ]]; then
+  ssh -o StrictHostKeyChecking=no -Y darint@$HOME_IP
+fi
+
+
+echo "Trying Remote: $REMOTE_IP"
+timeout .5 ping $HOME_IP -c 1 > /dev/null 2>&1 
+if [[ "$rc" == "0" ]]; then
+  ssh -o StrictHostKeyChecking=no -Y darint@$REMOTE_IP
+fi
+  
+
+
+

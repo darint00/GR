@@ -1,9 +1,12 @@
 alias todo="run --t "
 
 alias clu6="run --r clu6"
+alias xbox3="run --r xbox3"
 alias xbox2="run --r xbox2"
 alias xbox1="run --r xbox1"
 alias dc1="run --r dc1"
 
+alias home="run --r home"
 
 alias tbdv="run --r tbdv"
+alias monk8s="run --r monk8s" 
