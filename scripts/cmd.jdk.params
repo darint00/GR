@@ -1,0 +1,92 @@
+#!/bin/bash
+
+echo "###########################################"
+echo "### Set JDK Version" 
+echo "###########################################"
+
+if [ "$1" = "-h" ]; then
+exit
+fi
+
+
+if [[ $# == 0 ]]
+then
+   echo " "
+   echo "`basename $0:` :  JDK Management "
+   echo "       --jdk8  - Setup JDK 8" 
+   echo "       --jdk11 - Setup JDK 11" 
+   echo "       --jdk17 - Setup JDK 17" 
+   echo " "
+   exit
+fi
+
+
+while [[ $# -ge 1 ]];
+do
+  case "$1" in
+    --jdk8)
+      shift
+      action="jdk8"
+      ;;
+    --jdk11)
+      shift
+      action="jdk11"
+      ;;
+    --jdk17)
+      shift
+      action="jdk17"
+      ;;
+    *)
+      break
+      ;;
+  esac
+done
+
+
+JAVAHOMEDIR=""
+
+# Links 
+# /usr/bin/java
+# /usr/bin/javac
+# /usr/bin/javadoc
+# /usr/bin/javah
+# /usr/bin/javap
+
+
+# Point to
+#/etc/alternatives/java
+# etc...
+
+#HOME DIRS= 
+# /usr/lib/jvm/java-8-openjdk-amd64
+# /usr/lib/jvm/java-11-openjdk-amd64
+# /usr/lib/jvm/java-17-openjdk-amd64
+
+FILES="java javac javadoc javah javap"
+ALTDIR="/etc/alternatives"
+JVMDIR="/usr/lib/jvm"
+
+if [[ "$action" == "jdk8" ]]; then
+echo "Setting JDK 8"
+JDKDIR="${JVMDIR}/java-8-openjdk-amd64"
+fi
+
+if [[ "$action" == "jdk11" ]]; then
+echo "Setting JDK 11"
+JDKDIR="${JVMDIR}/java-11-openjdk-amd64"
+fi
+
+if [[ "$action" == "jdk17" ]]; then
+echo "Setting JDK 17"
+JDKDIR="${JVMDIR}/java-17-openjdk-amd64"
+fi
+
+for i in $FILES; 
+do
+  sudo rm ${ALTDIR}/$i
+done
+
+for i in $FILES;
+do
+ sudo ln -s ${JDKDIR}/bin/$i ${ALTDIR}/$i
+done

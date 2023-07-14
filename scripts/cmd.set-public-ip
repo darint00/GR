@@ -1,0 +1,15 @@
+#!/bin/bash
+
+echo "###########################################"
+echo "### Set Public IP" 
+echo "###########################################"
+if [ "$1" = "-h" ]; then
+exit
+fi
+
+
+curl icanhazip.com > ${KEYSDIR}/public.ip
+
+
+
+
