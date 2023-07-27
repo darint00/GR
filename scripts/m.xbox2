@@ -1,12 +1,10 @@
 #!/bin/bash
 
 echo "###########################################"
-echo "### Restart Docker " 
+echo "### xbox2" 
 echo "###########################################"
 if [ "$1" = "-h" ]; then
 exit
 fi
+ssh -o StrictHostKeyChecking=no -Y darint@xbox2
 
-
-
-sudo snap restart docker 
