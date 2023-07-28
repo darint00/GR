@@ -85,6 +85,8 @@ if [[ "$pods_flag" == "1" ]]; then
      #echo "action=$action"
      if [[ "$action" == "exit" ]]; then
        echo "Exiting"
+       echo " "
+       echo " "
        break;
      fi
     echo "Sleeping 10 seconds"
