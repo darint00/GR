@@ -7,7 +7,12 @@ alias xbox2="gr --m xbox2"
 alias xbox1="gr --m xbox1"
 alias dc1="gr --m dc1"
 
-alias home="gr --r home"
+alias home="gr --m home"
 
 alias tbdv="gr --r tbdv"
 alias monk8s="gr --r monk8s" 
+
+alias fgr1="gr --m fgr1"
+alias fgr2="gr --m fgr2"
+alias fgr3="gr --m fgr3"
+alias fgr4="gr --m fgr4"

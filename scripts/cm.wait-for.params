@@ -1,0 +1,95 @@
+#!/bin/bash
+
+
+function RUN() {
+if [[ "$noexec_flag" == "1" ]]; then
+  echo "RUN: ${1}"
+else
+  ${1}
+fi
+}
+
+if [[ $# == 0 ]]
+then
+   echo " "
+   echo "`basename $0:` :  Wait for Resource"
+   echo "       --pods      - Wait for pods Running"
+   echo "       --jobs      - Wait for Jobs Completed"
+   echo " "
+   echo "       Additional Options:"
+   echo "         --n  <namespace> "
+   echo "         --noexec      - No Execute/Display cmds"
+   echo " "
+   exit
+fi
+
+NS=""
+metallb_flag=1
+while [[ $# -ge 1 ]];
+do
+  case "$1" in
+    --noexec)
+      shift
+      noexec_flag=1
+      ;;
+    --pods)
+      shift
+      pods_flag=1
+      ;;
+    --n)
+      shift
+      NS=$1
+      shift
+      ;;
+    *)
+      break
+      ;;
+  esac
+done
+
+### 
+### Install elements for xbox1 
+###
+if [[ "$pods_flag" == "1" ]]; then
+# Wait for Running
+
+  action=""
+  while true
+  do 
+    action="exit"
+    shopt -s lastpipe
+    kubectl get pods ${NS} |grep -v STATUS | while read -r line 
+    do
+     IFS=" " read -r -a lineARRAY <<< $line
+
+     #echo "LINE: $line"
+     if [[ ${lineARRAY[2]} != "Running" ]]; then
+       # Break and continue
+       echo "Found (Not Running): $line" 
+       action="cont"
+       #echo "action=$action"
+       break 
+     fi 
+     
+     IFS="/" read -r -a paramARRAY <<< ${lineARRAY[1]}
+
+     if [[ "${paramARRAY[0]}" != "${paramARRAY[1]}" ]]; then
+       # Break and continue
+       echo "Found: [${paramARRAY[0]}], [${paramARRAY[1]}]" 
+       action="cont"
+       #echo "action=$action"
+       break 
+     fi 
+     
+    done
+     #echo "action=$action"
+     if [[ "$action" == "exit" ]]; then
+       echo "Exiting"
+       break;
+     fi
+    echo "Sleeping 10 seconds"
+    sleep "10"
+  done
+
+fi
+
