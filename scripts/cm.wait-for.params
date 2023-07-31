@@ -38,7 +38,7 @@ do
       ;;
     --n)
       shift
-      NS=$1
+      NS="-n $1"
       shift
       ;;
     *)
