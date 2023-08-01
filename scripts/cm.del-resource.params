@@ -1,0 +1,49 @@
+#!/bin/bash
+
+echo "###########################################"
+echo "### Delete Terminating Resource" 
+echo "###########################################"
+
+
+if [[ $# == 0 ]]
+then
+   echo " "
+   echo "`basename $0:` :  Delete Resource"
+   echo "       --namespace - Delete Stuck Terminating Resource"
+   echo " "
+   echo "       Additional Opitons:"
+   echo "         --noexec      - No Execute/Display cmds"
+   echo " "
+   exit
+fi
+
+
+while [[ $# -ge 1 ]];
+do
+  case "$1" in
+    --noexec)
+      shift
+      noexec_flag=1
+      ;;
+    --namespace)
+      shift
+      namespace_flag=1
+      ;;
+    *)
+      break
+      ;;
+  esac
+done
+
+
+### 
+### Delete Stuck namespace.  Fix the finalizer 
+###
+if [[ "$namespace_flag" == "1" ]]; then
+  NS=`kubectl get ns |grep Terminating | awk 'NR==1 {print $1}'` && kubectl get namespace "$NS" -o json   | tr -d "\n" | sed "s/\"finalizers\": \[[^]]\+\]/\"finalizers\": []/"   | kubectl replace --raw /api/v1/namespaces/$NS/finalize -f -
+fi
+
+
+
+
+
