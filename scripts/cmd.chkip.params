@@ -16,7 +16,7 @@ START=$1
 END=$2
 elif [[ "$1" == "all" ]]; then
   START=2
-  END=239
+  END=250
 else
    echo "`basename $0:` :  all | <start> <end>"
    exit

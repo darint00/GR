@@ -42,7 +42,7 @@ function print_genfiles() {
    for i in $GEN_LIST;
    do
       isparams=`echo $i|cut -d. -f2`
-      if [[ $isparams == "params" ]]; then
+      if [[ $isparams == "params" || $isparams == "bin" ]]; then
          i=`echo $i|cut -d. -f1`"*"
       fi
       isparams=""
