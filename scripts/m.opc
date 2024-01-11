@@ -6,4 +6,6 @@ echo "###########################################"
 if [ "$1" = "-h" ]; then
 exit
 fi
-ssh -i /home/KEYS/oracle.ssh.key opc@opc
+
+#ssh -i /home/KEYS/oracle.ssh.key opc@opc
+ssh darint@opc
