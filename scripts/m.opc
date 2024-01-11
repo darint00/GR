@@ -6,5 +6,4 @@ echo "###########################################"
 if [ "$1" = "-h" ]; then
 exit
 fi
-ssh -o StrictHostKeyChecking=no -Y darint@xbox3
-
+ssh -i /home/KEYS/oracle.ssh.key opc@opc

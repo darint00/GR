@@ -16,3 +16,6 @@ alias fgr1="gr --m fgr1"
 alias fgr2="gr --m fgr2"
 alias fgr3="gr --m fgr3"
 alias fgr4="gr --m fgr4"
+alias opc="gr --m opc"
+alias opc-xbox2="gr --m opc-xbox2"
+
