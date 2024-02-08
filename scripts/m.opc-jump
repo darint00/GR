@@ -7,5 +7,5 @@ if [ "$1" = "-h" ]; then
 exit
 fi
 
-ssh -J darint@opc -p 43034  darint@localhost
+ssh -o StrictHostKeyChecking=no -J darint@opc -p 43034  darint@localhost
 
