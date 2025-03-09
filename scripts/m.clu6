@@ -6,5 +6,5 @@ echo "###########################################"
 if [ "$1" = "-h" ]; then
 exit
 fi
-ssh -o StrictHostKeyChecking=no -Y darint@usau-vw-clu6
+ssh -o StrictHostKeyChecking=no -Y dtracy@usau-vw-clu6
 
